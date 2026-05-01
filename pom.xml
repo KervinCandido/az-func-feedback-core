@@ -72,6 +72,14 @@
             <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+<!--    Para testar o endpoint com HTTP real via @QuarkusTest    -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
