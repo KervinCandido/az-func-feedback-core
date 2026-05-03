@@ -33,6 +33,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.quarkiverse.azureservices</groupId>
+            <artifactId>quarkus-azure-keyvault</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
         </dependency>
