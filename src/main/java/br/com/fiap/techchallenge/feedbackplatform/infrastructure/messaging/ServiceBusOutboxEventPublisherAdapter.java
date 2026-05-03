@@ -2,13 +2,22 @@ package br.com.fiap.techchallenge.feedbackplatform.infrastructure.messaging;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.ports.OutboxEventPublisherPort;
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.OutboxEvent;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.config.ServiceBusManager;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
-public class LoggingOutboxEventPublisherAdapter implements OutboxEventPublisherPort {
+public class ServiceBusOutboxEventPublisherAdapter implements OutboxEventPublisherPort {
 
-    private static final Logger LOG = Logger.getLogger(LoggingOutboxEventPublisherAdapter.class);
+    private static final Logger LOG = Logger.getLogger(ServiceBusOutboxEventPublisherAdapter.class);
+
+    @Inject
+    private ServiceBusManager serviceBusManager;
+
+    @Inject
+    private JacksonEventPayloadSerializerAdapter serializer;
 
     @Override
     public void publish(OutboxEvent outboxEvent) {
@@ -17,7 +26,7 @@ public class LoggingOutboxEventPublisherAdapter implements OutboxEventPublisherP
                 outboxEvent.id(),
                 outboxEvent.aggregateId(),
                 outboxEvent.eventType(),
-                outboxEvent.payload()
-        );
+                outboxEvent.payload());
+        serviceBusManager.sendMessage(serializer.serialize(outboxEvent.payload()));
     }
 }

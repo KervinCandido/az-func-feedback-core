@@ -4,8 +4,8 @@ CREATE TABLE outbox_event (
                               event_type VARCHAR(100) NOT NULL,
                               payload TEXT NOT NULL,
                               status VARCHAR(30) NOT NULL,
-                              created_at TIMESTAMPTZ NOT NULL,
-                              published_at TIMESTAMPTZ NULL,
+                              created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                              published_at TIMESTAMP WITH TIME ZONE NULL,
                               retry_count INTEGER NOT NULL DEFAULT 0,
 
                               CONSTRAINT chk_outbox_event_status CHECK (
