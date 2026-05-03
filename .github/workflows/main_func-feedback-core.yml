@@ -23,13 +23,12 @@ jobs:
 
     steps:
       - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v5
-        with:
+        uses: actions/setup-java@v1
+        with: |+
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
 
       - name: 'Restore Project Dependencies Using Mvn'
         shell: pwsh
@@ -39,11 +38,11 @@ jobs:
           popd
       
       - name: Login to Azure
-        uses: azure/login@v3
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E7E75FAC2E4C4BBD828D7A7D11AED8F1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8634507C4AA34D52B16EF9931DFB6A18 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EA91975A6BCE440B8D99454309829C05 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F995FC8D01B0422796D241F3FE4F3090 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_63AE2E6A7E98414BB664000B4733A069 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AA4451E1969A4ECCA3A099711B56C2AA }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
