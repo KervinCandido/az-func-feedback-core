@@ -50,12 +50,15 @@ Outros tipos comuns suportados (baseados na convenção do Angular):
 *   Deve ser escrito no tempo imperativo, presente (ex: "adiciona", "corrige", "muda" - ou em inglês "add", "fix", "change"). Não use o passado ("adicionado", "corrigido").
 *   Não capitalize a primeira letra (a menos que seja uma palavra que exija maiúscula).
 *   Não coloque ponto final (`.`) no final da linha.
+*   Não utilize emojis.
+*   Escreva em Português-BR
 
 ## Corpo (`[corpo]`)
 
 *   **Opcional**. Use se precisar explicar o *o quê* e o *porquê* das mudanças, não o *como*.
 *   Deve ser separado da descrição curta por uma linha em branco.
 *   Pode ter múltiplas quebras de linha e parágrafos.
+*   Escreva em Português-BR
 
 ## Rodapé (`[rodapé(s)]`)
 
