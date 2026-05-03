@@ -13,11 +13,16 @@ public class ServiceBusOutboxEventPublisherAdapter implements OutboxEventPublish
 
     private static final Logger LOG = Logger.getLogger(ServiceBusOutboxEventPublisherAdapter.class);
 
-    @Inject
-    private ServiceBusManager serviceBusManager;
+    private final ServiceBusManager serviceBusManager;
+
+    private final JacksonEventPayloadSerializerAdapter serializer;
 
     @Inject
-    private JacksonEventPayloadSerializerAdapter serializer;
+    public ServiceBusOutboxEventPublisherAdapter(ServiceBusManager serviceBusManager,
+            JacksonEventPayloadSerializerAdapter serializer) {
+        this.serviceBusManager = serviceBusManager;
+        this.serializer = serializer;
+    }
 
     @Override
     public void publish(OutboxEvent outboxEvent) {

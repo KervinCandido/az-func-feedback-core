@@ -4,26 +4,41 @@ import br.com.fiap.techchallenge.feedbackplatform.application.dto.PublishOutboxE
 import br.com.fiap.techchallenge.feedbackplatform.application.ports.OutboxEventRepositoryPort;
 import br.com.fiap.techchallenge.feedbackplatform.domain.enums.StatusOutboxEvent;
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.OutboxEvent;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.config.ServiceBusManager;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.messaging.JacksonEventPayloadSerializerAdapter;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.messaging.ServiceBusOutboxEventPublisherAdapter;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.willDoNothing;
 
 @QuarkusTest
 class PublishPendingOutboxEventsUseCaseIntegrationTest {
 
-    private final PublishPendingOutboxEventsUseCase publishPendingOutboxEventsUseCase;
-    private final OutboxEventRepositoryPort outboxEventRepository;
+    private PublishPendingOutboxEventsUseCase publishPendingOutboxEventsUseCase;
 
-    PublishPendingOutboxEventsUseCaseIntegrationTest(
-            PublishPendingOutboxEventsUseCase publishPendingOutboxEventsUseCase,
-            OutboxEventRepositoryPort outboxEventRepository
-    ) {
-        this.publishPendingOutboxEventsUseCase = publishPendingOutboxEventsUseCase;
-        this.outboxEventRepository = outboxEventRepository;
+    @Inject
+    private OutboxEventRepositoryPort outboxEventRepository;
+
+    @Inject
+    private JacksonEventPayloadSerializerAdapter serializer;
+
+    @InjectMock
+    private ServiceBusManager serviceBusManager;
+
+    @BeforeEach
+    void setUp() {
+        willDoNothing().given(serviceBusManager).sendMessage(anyString());
+        var serviceBusOutboxEventPublisherAdapter = new ServiceBusOutboxEventPublisherAdapter(serviceBusManager, serializer);
+        this.publishPendingOutboxEventsUseCase = new PublishPendingOutboxEventsUseCase(outboxEventRepository, serviceBusOutboxEventPublisherAdapter);
     }
 
     @Test
@@ -33,14 +48,13 @@ class PublishPendingOutboxEventsUseCaseIntegrationTest {
                 UUID.randomUUID(),
                 "feedback.created",
                 """
-                {
-                  "id": "feedback-id",
-                  "descricao": "A plataforma está travando durante a aula",
-                  "nota": 8,
-                  "urgencia": "ALTA"
-                }
-                """
-        );
+                        {
+                          "id": "feedback-id",
+                          "descricao": "A plataforma está travando durante a aula",
+                          "nota": 8,
+                          "urgencia": "ALTA"
+                        }
+                        """);
 
         outboxEventRepository.save(eventoPendente);
 
