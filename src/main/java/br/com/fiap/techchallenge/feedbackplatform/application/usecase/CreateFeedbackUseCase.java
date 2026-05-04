@@ -1,33 +1,28 @@
 package br.com.fiap.techchallenge.feedbackplatform.application.usecase;
 
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.CreateFeedbackCommand;
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreatedResult;
 import br.com.fiap.techchallenge.feedbackplatform.application.ports.FeedbackRepositoryPort;
+import br.com.fiap.techchallenge.feedbackplatform.application.ports.FeedbackUrgenciaClassifier;
+import br.com.fiap.techchallenge.feedbackplatform.application.ports.Notification;
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.Feedback;
-import br.com.fiap.techchallenge.feedbackplatform.domain.services.FeedbackUrgenciaClassifier;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
-import java.util.Objects;
-
-@ApplicationScoped
 public class CreateFeedbackUseCase {
 
     private final FeedbackRepositoryPort feedbackRepository;
     private final FeedbackUrgenciaClassifier urgenciaClassifier;
+    private final Notification<Feedback> notification;
 
-    @Inject
-    public CreateFeedbackUseCase(FeedbackRepositoryPort feedbackRepository) {
-        this(feedbackRepository, new FeedbackUrgenciaClassifier());
-    }
-
-    CreateFeedbackUseCase(FeedbackRepositoryPort feedbackRepository, FeedbackUrgenciaClassifier urgenciaClassifier) {
+    public CreateFeedbackUseCase(FeedbackRepositoryPort feedbackRepository,
+            FeedbackUrgenciaClassifier urgenciaClassifier, Notification<Feedback> notification) {
         this.feedbackRepository = Objects.requireNonNull(feedbackRepository);
         this.urgenciaClassifier = Objects.requireNonNull(urgenciaClassifier);
+        this.notification = Objects.requireNonNull(notification);
     }
 
-    @Transactional
     public FeedbackCreatedResult execute(CreateFeedbackCommand command) {
         Objects.requireNonNull(command, "command é obrigatório");
 
@@ -36,6 +31,11 @@ public class CreateFeedbackUseCase {
                 command.nota(),
                 urgenciaClassifier);
         Feedback feedbackSalvo = feedbackRepository.save(feedback);
+
+        if (feedbackSalvo.isUrgente()) {
+            this.notification.send(feedbackSalvo);
+        }
+
         return FeedbackCreatedResult.from(feedbackSalvo);
     }
 }

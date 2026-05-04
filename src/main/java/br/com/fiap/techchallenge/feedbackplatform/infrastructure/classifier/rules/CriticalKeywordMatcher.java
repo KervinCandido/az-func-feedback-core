@@ -1,4 +1,4 @@
-package br.com.fiap.techchallenge.feedbackplatform.domain.rules;
+package br.com.fiap.techchallenge.feedbackplatform.infrastructure.classifier.rules;
 
 import java.text.Normalizer;
 import java.util.Objects;
@@ -17,8 +17,7 @@ public class CriticalKeywordMatcher {
                 "horrivel",
                 "nao funciona",
                 "reclamacao",
-                "insuportavel"
-        ));
+                "insuportavel"));
     }
 
     public CriticalKeywordMatcher(Set<String> palavrasCriticas) {

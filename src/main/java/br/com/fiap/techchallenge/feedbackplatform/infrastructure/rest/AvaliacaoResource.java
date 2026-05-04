@@ -1,11 +1,12 @@
-package br.com.fiap.techchallenge.feedbackplatform.entrypoint.rest;
+package br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.CreateFeedbackCommand;
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreatedResult;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.CreateFeedbackUseCase;
-import br.com.fiap.techchallenge.feedbackplatform.entrypoint.rest.dto.CreateAvaliacaoRequest;
-import br.com.fiap.techchallenge.feedbackplatform.entrypoint.rest.dto.CreateAvaliacaoResponse;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoRequest;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoResponse;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -37,6 +38,7 @@ public class AvaliacaoResource {
     }
 
     @POST
+    @Transactional
     public Response criar(@Valid CreateAvaliacaoRequest request, @Context UriInfo uriInfo) {
         LOG.info("Criando avaliacao: {}", request);
         CreateFeedbackCommand command = new CreateFeedbackCommand(request.descricao(), request.nota());

@@ -1,4 +1,4 @@
-package br.com.fiap.techchallenge.feedbackplatform.entrypoint.rest.dto;
+package br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreatedResult;
 import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
@@ -11,8 +11,7 @@ public record CreateAvaliacaoResponse(
         String descricao,
         int nota,
         Urgencia urgencia,
-        OffsetDateTime dataCriacao
-) {
+        OffsetDateTime dataCriacao) {
 
     public static CreateAvaliacaoResponse from(FeedbackCreatedResult result) {
         return new CreateAvaliacaoResponse(
@@ -20,7 +19,6 @@ public record CreateAvaliacaoResponse(
                 result.descricao(),
                 result.nota(),
                 result.urgencia(),
-                result.dataCriacao()
-        );
+                result.dataCriacao());
     }
 }

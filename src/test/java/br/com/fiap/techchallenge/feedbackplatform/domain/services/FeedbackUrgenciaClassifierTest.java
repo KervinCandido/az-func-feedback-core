@@ -1,6 +1,8 @@
 package br.com.fiap.techchallenge.feedbackplatform.domain.services;
 
 import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
+import br.com.fiap.techchallenge.feedbackplatform.infrastructure.classifier.FeedbackUrgenciaClassifierAdapter;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FeedbackUrgenciaClassifierTest {
 
-    private final FeedbackUrgenciaClassifier classifier = new FeedbackUrgenciaClassifier();
+    private final FeedbackUrgenciaClassifierAdapter classifier = new FeedbackUrgenciaClassifierAdapter();
 
     @Test
     void deveClassificarComoAltaQuandoNotaForEntreZeroETres() {

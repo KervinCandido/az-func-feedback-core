@@ -1,11 +1,11 @@
 package br.com.fiap.techchallenge.feedbackplatform.domain.model;
 
-import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
-import br.com.fiap.techchallenge.feedbackplatform.domain.services.FeedbackUrgenciaClassifier;
-
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
+import br.com.fiap.techchallenge.feedbackplatform.application.ports.FeedbackUrgenciaClassifier;
+import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
 
 public record Feedback(
         UUID id,
@@ -56,5 +56,9 @@ public record Feedback(
         if (nota < 0 || nota > 10) {
             throw new IllegalArgumentException("Nota deve estar entre 0 e 10.");
         }
+    }
+
+    public boolean isUrgente() {
+        return Urgencia.ALTA.equals(this.urgencia);
     }
 }
