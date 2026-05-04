@@ -18,12 +18,18 @@ import jakarta.ws.rs.core.UriInfo;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Path("/avaliacoes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AvaliacaoResource {
 
-    private final CreateFeedbackUseCase createFeedbackUseCase;
+    private static final Logger LOG = LoggerFactory.getLogger(AvaliacaoResource.class);
+
+    @Inject
+    private CreateFeedbackUseCase createFeedbackUseCase;
 
     @Inject
     public AvaliacaoResource(CreateFeedbackUseCase createFeedbackUseCase) {
@@ -32,14 +38,12 @@ public class AvaliacaoResource {
 
     @POST
     public Response criar(@Valid CreateAvaliacaoRequest request, @Context UriInfo uriInfo) {
+        LOG.info("Criando avaliacao: {}", request);
         CreateFeedbackCommand command = new CreateFeedbackCommand(request.descricao(), request.nota());
-
         FeedbackCreatedResult result = createFeedbackUseCase.execute(command);
-
         CreateAvaliacaoResponse response = CreateAvaliacaoResponse.from(result);
-
         URI location = uriInfo.getAbsolutePathBuilder().path(result.id().toString()).build();
-
+        LOG.info("Avaliacao criada com sucesso: {}", response);
         return Response.created(location).entity(response).build();
     }
 }
