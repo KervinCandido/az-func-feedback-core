@@ -1,6 +1,5 @@
 package br.com.fiap.techchallenge.feedbackplatform.domain.model;
 
-import br.com.fiap.techchallenge.feedbackplatform.domain.enums.StatusProcessamentoFeedback;
 import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
 import br.com.fiap.techchallenge.feedbackplatform.domain.services.FeedbackUrgenciaClassifier;
 
@@ -13,11 +12,7 @@ public record Feedback(
         String descricao,
         int nota,
         Urgencia urgencia,
-        OffsetDateTime dataCriacao,
-        boolean alertaEnviado,
-        OffsetDateTime dataEnvioAlerta,
-        StatusProcessamentoFeedback statusProcessamento
-) {
+        OffsetDateTime dataCriacao) {
 
     public Feedback {
         Objects.requireNonNull(id, "id é obrigatório");
@@ -25,7 +20,6 @@ public record Feedback(
         validarNota(nota);
         Objects.requireNonNull(urgencia, "urgencia é obrigatória");
         Objects.requireNonNull(dataCriacao, "dataCriacao é obrigatória");
-        Objects.requireNonNull(statusProcessamento, "statusProcessamento é obrigatório");
     }
 
     public static Feedback novo(String descricao, int nota, FeedbackUrgenciaClassifier classifier) {
@@ -38,11 +32,7 @@ public record Feedback(
                 descricao,
                 nota,
                 urgenciaCalculada,
-                OffsetDateTime.now(),
-                false,
-                null,
-                StatusProcessamentoFeedback.PENDENTE
-        );
+                OffsetDateTime.now());
     }
 
     public Feedback marcarAlertaEnviado(OffsetDateTime dataEnvioAlerta) {
@@ -53,26 +43,7 @@ public record Feedback(
                 descricao,
                 nota,
                 urgencia,
-                dataCriacao,
-                true,
-                dataEnvioAlerta,
-                StatusProcessamentoFeedback.PROCESSADO
-        );
-    }
-
-    public Feedback atualizarStatus(StatusProcessamentoFeedback novoStatus) {
-        Objects.requireNonNull(novoStatus, "novoStatus é obrigatório");
-
-        return new Feedback(
-                id,
-                descricao,
-                nota,
-                urgencia,
-                dataCriacao,
-                alertaEnviado,
-                dataEnvioAlerta,
-                novoStatus
-        );
+                dataCriacao);
     }
 
     private static void validarDescricao(String descricao) {
