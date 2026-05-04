@@ -2,7 +2,7 @@ package br.com.fiap.techchallenge.feedbackplatform.infrastructure.outbox;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.PublishOutboxEventsResult;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.PublishPendingOutboxEventsUseCase;
-import io.quarkus.scheduler.Scheduled;
+// import io.quarkus.scheduler.Scheduled;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -23,7 +23,8 @@ public class OutboxPublisherScheduler {
         this.batchSize = batchSize;
     }
 
-    @Scheduled(every = "{app.outbox.publisher.interval}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    // @Scheduled(every = "{app.outbox.publisher.interval}", concurrentExecution =
+    // Scheduled.ConcurrentExecution.SKIP)
     void publishPendingEvents() {
         if (!enabled) {
             LOG.debug("Publicador de outbox desabilitado por configuração.");
