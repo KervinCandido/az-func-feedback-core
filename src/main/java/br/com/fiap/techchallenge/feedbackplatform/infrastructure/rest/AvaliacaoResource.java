@@ -5,6 +5,8 @@ import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreate
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.CreateFeedbackUseCase;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoRequest;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoResponse;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -39,6 +41,8 @@ public class AvaliacaoResource {
 
     @POST
     @Transactional
+    @Counted(value = "criacoes.avaliacoes", description = "Contador de avaliações criadas")
+    @Timed(value = "criacao.avaliacao.time", description = "Tempo de execução da criação de avaliação")
     public Response criar(@Valid CreateAvaliacaoRequest request, @Context UriInfo uriInfo) {
         LOG.info("Criando avaliacao: {}", request);
         CreateFeedbackCommand command = new CreateFeedbackCommand(request.descricao(), request.nota());
