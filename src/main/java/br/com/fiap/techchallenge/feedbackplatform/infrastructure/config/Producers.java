@@ -3,7 +3,10 @@ package br.com.fiap.techchallenge.feedbackplatform.infrastructure.config;
 import java.util.List;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.ports.FeedbackRepositoryPort;
+import br.com.fiap.techchallenge.feedbackplatform.application.ports.ReportStoragePort;
+import br.com.fiap.techchallenge.feedbackplatform.application.ports.WeeklyFeedbackReportSerializerPort;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.CreateFeedbackUseCase;
+import br.com.fiap.techchallenge.feedbackplatform.application.usecase.GenerateAndStoreWeeklyFeedbackReportUseCase;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.GenerateWeeklyFeedbackReportUseCase;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.classifier.FeedbackUrgenciaClassifierAdapter;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.notify.EmailSender;
@@ -26,5 +29,17 @@ public class Producers {
     public GenerateWeeklyFeedbackReportUseCase generateWeeklyFeedbackReportUseCaseProducer(
             FeedbackRepositoryPort feedbackRepository) {
         return new GenerateWeeklyFeedbackReportUseCase(feedbackRepository);
+    }
+
+    @Produces
+    @ApplicationScoped
+    public GenerateAndStoreWeeklyFeedbackReportUseCase generateAndStoreWeeklyFeedbackReportUseCaseProducer(
+            GenerateWeeklyFeedbackReportUseCase generateWeeklyFeedbackReportUseCase,
+            WeeklyFeedbackReportSerializerPort serializer,
+            ReportStoragePort storage) {
+        return new GenerateAndStoreWeeklyFeedbackReportUseCase(
+                generateWeeklyFeedbackReportUseCase,
+                serializer,
+                storage);
     }
 }
