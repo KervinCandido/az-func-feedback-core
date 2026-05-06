@@ -9,6 +9,7 @@ import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.Feedback;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -118,6 +119,18 @@ class CreateFeedbackUseCaseTest {
         public Optional<Feedback> findById(UUID id) {
             return Optional.ofNullable(feedbackSalvo)
                     .filter(feedback -> feedback.id().equals(id));
+        }
+
+        @Override
+        public List<Feedback> findByDataCriacaoBetween(OffsetDateTime inicio, OffsetDateTime fim) {
+            if (feedbackSalvo == null) {
+                return List.of();
+            }
+
+            boolean dentroDoPeriodo = !feedbackSalvo.dataCriacao().isBefore(inicio)
+                    && feedbackSalvo.dataCriacao().isBefore(fim);
+
+            return dentroDoPeriodo ? List.of(feedbackSalvo) : List.of();
         }
     }
 }

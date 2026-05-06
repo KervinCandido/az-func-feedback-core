@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.ports.FeedbackRepositoryPort;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.CreateFeedbackUseCase;
+import br.com.fiap.techchallenge.feedbackplatform.application.usecase.GenerateWeeklyFeedbackReportUseCase;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.classifier.FeedbackUrgenciaClassifierAdapter;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.notify.EmailSender;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,5 +19,12 @@ public class Producers {
             FeedbackRepositoryPort feedbackRepository, EmailSender emailSender) {
         return new CreateFeedbackUseCase(feedbackRepository, new FeedbackUrgenciaClassifierAdapter(),
                 List.of((feedback) -> emailSender.send(feedback)));
+    }
+
+    @Produces
+    @ApplicationScoped
+    public GenerateWeeklyFeedbackReportUseCase generateWeeklyFeedbackReportUseCaseProducer(
+            FeedbackRepositoryPort feedbackRepository) {
+        return new GenerateWeeklyFeedbackReportUseCase(feedbackRepository);
     }
 }

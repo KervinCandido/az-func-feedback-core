@@ -7,6 +7,8 @@ import br.com.fiap.techchallenge.feedbackplatform.infrastructure.persistence.map
 import io.micrometer.core.annotation.Timed;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,5 +38,14 @@ public class JpaFeedbackRepositoryAdapter implements FeedbackRepositoryPort {
     public Optional<Feedback> findById(UUID id) {
         return panacheRepository.findByIdOptional(id)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Feedback> findByDataCriacaoBetween(OffsetDateTime inicio, OffsetDateTime fim) {
+        return panacheRepository
+                .list("dataCriacao >= ?1 and dataCriacao < ?2 order by dataCriacao asc", inicio, fim)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }
