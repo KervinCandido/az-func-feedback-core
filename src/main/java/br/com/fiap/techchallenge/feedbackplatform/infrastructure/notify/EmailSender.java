@@ -31,15 +31,15 @@ public class EmailSender implements Notification<Feedback> {
 
     @Inject
     @ConfigProperty(name = "app.admin-emails")
-    private String adminEmails;
+    String adminEmails;
 
     @Inject
     @ConfigProperty(name = "app.email.sender-address")
-    private String senderAddress;
+    String senderAddress;
 
     @Inject
     @ConfigProperty(name = "app.email.subject")
-    private String subject;
+    String subject;
 
     @Override
     public void send(Feedback feedback) {
