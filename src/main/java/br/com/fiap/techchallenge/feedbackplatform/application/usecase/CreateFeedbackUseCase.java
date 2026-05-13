@@ -2,7 +2,6 @@ package br.com.fiap.techchallenge.feedbackplatform.application.usecase;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.CreateFeedbackCommand;
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreatedResult;
