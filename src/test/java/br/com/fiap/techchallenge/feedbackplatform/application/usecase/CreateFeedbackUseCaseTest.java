@@ -9,7 +9,6 @@ import br.com.fiap.techchallenge.feedbackplatform.domain.enums.Urgencia;
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.Feedback;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +28,10 @@ class CreateFeedbackUseCaseTest {
         CreateFeedbackUseCase useCase = new CreateFeedbackUseCase(
                 repository,
                 classifier,
-                List.of(notification)
-        );
+                List.of(notification));
 
         FeedbackCreatedResult result = useCase.execute(
-                new CreateFeedbackCommand("Aula muito boa", 9)
-        );
+                new CreateFeedbackCommand("Aula muito boa", 9));
 
         assertNotNull(result.id());
         assertEquals("Aula muito boa", result.descricao());
@@ -58,12 +55,10 @@ class CreateFeedbackUseCaseTest {
         CreateFeedbackUseCase useCase = new CreateFeedbackUseCase(
                 repository,
                 classifier,
-                List.of(notification)
-        );
+                List.of(notification));
 
         FeedbackCreatedResult result = useCase.execute(
-                new CreateFeedbackCommand("Sistema travando", 8)
-        );
+                new CreateFeedbackCommand("Sistema travando", 8));
 
         assertEquals(Urgencia.ALTA, result.urgencia());
         assertEquals(1, notificacoes.size());
@@ -80,12 +75,10 @@ class CreateFeedbackUseCaseTest {
         CreateFeedbackUseCase useCase = new CreateFeedbackUseCase(
                 repository,
                 classifier,
-                List.of(notification)
-        );
+                List.of(notification));
 
         FeedbackCreatedResult result = useCase.execute(
-                new CreateFeedbackCommand("Aula regular", 5)
-        );
+                new CreateFeedbackCommand("Aula regular", 5));
 
         assertEquals(Urgencia.MEDIA, result.urgencia());
         assertTrue(notificacoes.isEmpty());
@@ -99,8 +92,7 @@ class CreateFeedbackUseCaseTest {
         CreateFeedbackUseCase useCase = new CreateFeedbackUseCase(
                 repository,
                 classifier,
-                List.of()
-        );
+                List.of());
 
         assertThrows(NullPointerException.class, () -> useCase.execute(null));
     }
@@ -119,18 +111,6 @@ class CreateFeedbackUseCaseTest {
         public Optional<Feedback> findById(UUID id) {
             return Optional.ofNullable(feedbackSalvo)
                     .filter(feedback -> feedback.id().equals(id));
-        }
-
-        @Override
-        public List<Feedback> findByDataCriacaoBetween(OffsetDateTime inicio, OffsetDateTime fim) {
-            if (feedbackSalvo == null) {
-                return List.of();
-            }
-
-            boolean dentroDoPeriodo = !feedbackSalvo.dataCriacao().isBefore(inicio)
-                    && feedbackSalvo.dataCriacao().isBefore(fim);
-
-            return dentroDoPeriodo ? List.of(feedbackSalvo) : List.of();
         }
     }
 }
