@@ -5,6 +5,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.jwt.Claim;
+import io.quarkus.test.security.jwt.JwtSecurity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +16,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
+@TestSecurity(user = "testUser", roles = { "ALUNO" })
+@JwtSecurity(claims = { @Claim(key = "groups", value = "ALUNO") })
 class AvaliacaoResourceTest {
 
     @Inject
@@ -30,8 +35,8 @@ class AvaliacaoResourceTest {
                 .contentType(ContentType.JSON)
                 .body("""
                         {
-                          "descricao": "A aula foi muito boa",
-                          "nota": 9
+                                "descricao": "A aula foi muito boa",
+                                "nota": 9
                         }
                         """)
                 .when()
@@ -144,5 +149,60 @@ class AvaliacaoResourceTest {
                 .post("/avaliacoes")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    @TestSecurity(user = "professorUser", roles = { "PROFESSOR" })
+    @JwtSecurity(claims = { @Claim(key = "groups", value = "PROFESSOR") })
+    void deveRetornarForbiddenQuandoUsuarioForProfessor() {
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                          "descricao": "Tentando avaliar como professor",
+                          "nota": 10
+                        }
+                        """)
+                .when()
+                .post("/avaliacoes")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @TestSecurity(user = "adminUser", roles = { "ADMIN" })
+    @JwtSecurity(claims = { @Claim(key = "groups", value = "ADMIN") })
+    void deveRetornarForbiddenQuandoUsuarioForAdmin() {
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "descricao": "Tentando avaliar como admin",
+                            "nota": 5
+                        }
+                        """)
+                .when()
+                .post("/avaliacoes")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @TestSecurity(user = "", roles = {}) // Remove o usuário mockado
+    void deveRetornarUnauthorizedQuandoNaoAutenticado() {
+        // Ao removermos o mock, o Quarkus vai exigir o header Authorization de verdade
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                                "descricao": "Tentando avaliar sem token",
+                                "nota": 5
+                        }
+                        """)
+                .when()
+                .post("/avaliacoes")
+                .then()
+                // Se a chamada real for feita sem token, retorna 401
+                .statusCode(401);
     }
 }

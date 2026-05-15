@@ -2,6 +2,7 @@ package br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest;
 
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.CreateFeedbackCommand;
 import br.com.fiap.techchallenge.feedbackplatform.application.dto.FeedbackCreatedResult;
+import jakarta.annotation.security.RolesAllowed;
 import br.com.fiap.techchallenge.feedbackplatform.application.usecase.CreateFeedbackUseCase;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoRequest;
 import br.com.fiap.techchallenge.feedbackplatform.infrastructure.rest.dto.CreateAvaliacaoResponse;
@@ -40,6 +41,7 @@ public class AvaliacaoResource {
     }
 
     @POST
+    @RolesAllowed("ALUNO")
     @Transactional
     @Counted(value = "criacoes.avaliacoes", description = "Contador de avaliações criadas")
     @Timed(value = "criacao.avaliacao.time", description = "Tempo de execução da criação de avaliação")
