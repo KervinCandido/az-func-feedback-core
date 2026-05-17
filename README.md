@@ -380,8 +380,6 @@ quarkus.http.root-path=api
 
 Portanto, em execução local, os endpoints ficam sob `/api`.
 
-> TODO: confirmar antes da entrega se `quarkus.http.root-path=api` permanece no `src/main/resources/application.properties`. Caso seja removido, ajustar os exemplos para `/avaliacoes` e `/admin/feedbacks/{feedbackId}/notificacoes`.
-
 ### Tabela de endpoints
 
 | Método | Endpoint | Role | Descrição |
@@ -613,22 +611,24 @@ O projeto usa propriedades do Quarkus, variáveis de ambiente e Azure Key Vault 
 
 | Propriedade da aplicação | Origem esperada | Descrição |
 |---|---|---|
+| `quarkus.azure-functions.app-name` | `application.properties` | Nome da Azure Function App. Valor atual: `func-feedback-core`. |
+| `quarkus.azure-functions.runtime.java-version` | `application.properties` | Versão Java usada no runtime da Azure Function. Valor atual: `25`. |
 | `quarkus.azure.keyvault.secret.endpoint` | `QUARKUS_AZURE_KEYVAULT_SECRET_ENDPOINT` | Endpoint do Azure Key Vault. |
-| `quarkus.http.root-path` | `application.properties` | Prefixo base da API. Valor esperado: `api`. |
-| `quarkus.datasource.db-kind` | `QUARKUS_DB_KIND` ou valor configurado no projeto | Tipo do banco. Em produção: PostgreSQL. |
-| `quarkus.datasource.jdbc.url` | Key Vault / variável de ambiente | URL JDBC do PostgreSQL. |
-| `quarkus.datasource.username` | Key Vault / variável de ambiente | Usuário do banco. |
-| `quarkus.datasource.password` | Key Vault / variável de ambiente | Senha do banco. |
-| `app.email.connection-string` | Key Vault / variável de ambiente | Connection string do Azure Communication Email. |
-| `app.admin-emails` | Key Vault / variável de ambiente | Lista de e-mails administrativos. |
-| `app.email.sender-address` | Key Vault / variável de ambiente | Endereço remetente autorizado no Azure Communication Email. |
-| `app.email.subject` | `EMAIL_SUBJECT` ou valor padrão | Assunto do e-mail de alerta. |
-| `mp.jwt.verify.issuer` | configuração da aplicação | Emissor esperado do token JWT. |
-| `mp.jwt.verify.publickey` | Key Vault / variável / arquivo seguro | Chave pública para validação do JWT. |
+| `quarkus.http.root-path` | `application.properties` | Prefixo base da API. Valor atual: `api`. |
+| `quarkus.datasource.db-kind` | `FEEDBACK_DB_KIND` ou valor padrão `postgresql` | Tipo do banco de dados. |
+| `quarkus.datasource.jdbc.url` | `FEEDBACK_DB_URL` ou secret `FeedBackDBUrl` | URL JDBC do PostgreSQL. |
+| `quarkus.datasource.username` | `FEEDBACK_DB_USER` ou secret `FeedbackDBUser` | Usuário do banco. |
+| `quarkus.datasource.password` | `FEEDBACK_DB_PASSWORD` ou secret `FeedBackDBPassword` | Senha do banco. |
+| `app.email.connection-string` | `EMAIL_CONNECTION_STRING` ou secret `FeedbackDBEmailConnectionString` | Connection string do Azure Communication Email. |
+| `app.admin-emails` | `ADMIN_EMAILS` ou secret `FeedbackAdminEmailList` | Lista de e-mails administrativos. |
+| `app.email.sender-address` | `EMAIL_SENDER_ADDRESS` ou secret `FeedbackEmailSenderAddress` | Endereço remetente autorizado no Azure Communication Email. |
+| `app.email.subject` | `EMAIL_SUBJECT` ou valor padrão configurado no projeto | Assunto do e-mail de alerta. |
+| `mp.jwt.verify.issuer` | `application.properties` | Emissor esperado do token JWT. |
+| `mp.jwt.verify.publickey` | `JWT_PUBLIC_KEY` ou secret `jwt-public-key` | Chave pública para validação do JWT. |
 
 > TODO: confirmar e documentar os nomes finais dos secrets usados no Azure Key Vault.
 
-### Sugestão de nomes de secrets
+### Nomes esperados de secrets
 
 Abaixo estão nomes esperados/sugeridos para os secrets, a confirmar conforme o ambiente final:
 
@@ -640,37 +640,39 @@ Abaixo estão nomes esperados/sugeridos para os secrets, a confirmar conforme o 
 | `FeedbackDBEmailConnectionString` | Connection string do Azure Communication Email. |
 | `FeedbackAdminEmailList` | Lista de e-mails administrativos. |
 | `FeedbackEmailSenderAddress` | E-mail remetente autorizado. |
-| `jwt-public-key` | Chave pública para validação dos tokens. TODO: confirmar nome real. |
+| `jwt-public-key` | Chave pública para validação dos tokens JWT. |
 
 ### Configuração sensível
 
 Valores sensíveis não devem ser versionados no Git.
 
-Em produção, banco, e-mail e chave pública JWT devem vir de:
+Na configuração principal, banco, e-mail e chave pública JWT são obtidos por variáveis de ambiente ou por referências ao Azure Key Vault.
 
-1. variáveis de ambiente da Function App; ou
-2. Azure Key Vault.
+Em ambiente cloud, a Function App deve receber essas configurações por **App Settings** e/ou por secrets no **Azure Key Vault**.
 
-Em testes automatizados, o projeto usa H2 e valores mockados para e-mail/JWT.
+### Perfil de desenvolvimento
+
+Para execução local com `mvn quarkus:dev`, o perfil `%dev` usa H2 em memória e valores mockados para e-mail/JWT. Isso permite subir o core localmente sem depender do PostgreSQL, do Azure Communication Email ou de uma chave pública real.
+
+Exemplo conceitual do perfil `%dev`:
+
+```properties
+%dev.quarkus.datasource.db-kind=h2
+%dev.quarkus.datasource.jdbc.url=jdbc:h2:mem:feedback_dev;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+%dev.quarkus.datasource.username=sa
+%dev.quarkus.datasource.password=sa
+
+%dev.app.email.connection-string=endpoint=https://localhost;accesskey=mock
+%dev.app.admin-emails=test@example.com
+%dev.app.email.sender-address=test@example.com
+%dev.app.email.subject=Feedback Dev
+
+%dev.mp.jwt.verify.publickey=mock-key
+```
 
 ### Perfil de teste
 
-Exemplo conceitual de configuração de teste:
-
-```properties
-quarkus.datasource.db-kind=h2
-quarkus.datasource.jdbc.url=jdbc:h2:mem:feedback_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
-quarkus.datasource.username=sa
-quarkus.datasource.password=sa
-
-app.email.connection-string=endpoint=https://localhost;accesskey=mock
-app.admin-emails=test@example.com
-app.email.sender-address=test@example.com
-app.email.subject=Feedback Test
-
-mp.jwt.verify.issuer=https://feedback-login.com.br/issuer
-mp.jwt.verify.publickey=mock-key
-```
+Os testes automatizados usam H2 em memória e valores mockados para e-mail/JWT, garantindo execução isolada e sem dependência dos recursos reais do Azure.
 
 ---
 
@@ -732,7 +734,9 @@ Exemplo:
 http://localhost:8080/api/avaliacoes
 ```
 
-> TODO: confirmar se a execução local em `quarkus:dev` será demonstrada com H2, PostgreSQL local ou banco cloud.
+Por padrão, o perfil `%dev` utiliza H2 em memória e configurações mockadas de e-mail/JWT, permitindo executar o core localmente sem depender do PostgreSQL ou dos serviços reais do Azure.
+
+Para executar contra PostgreSQL ou recursos reais, informe as variáveis de ambiente correspondentes ou configure os secrets no Azure Key Vault.
 
 ### Rodar como Azure Function local
 
@@ -858,7 +862,6 @@ Errors: 0
 Skipped: 0
 BUILD SUCCESS
 ```
-
 
 ---
 
@@ -1093,12 +1096,18 @@ feedbackRepository.deleteAll();
 
 ### Caracteres acentuados aparecem como `?` no console
 
-Isso geralmente está ligado ao encoding do terminal no Windows. O projeto usa UTF-8, mas o terminal pode não estar renderizando corretamente.
+Isso geralmente está ligado ao encoding do terminal no Windows ao renderizar nomes de testes, logs ou `@DisplayName`.
 
-Possível ajuste:
+Esse comportamento é visual e não indica falha no projeto. O resultado do Maven deve ser avaliado pelo resumo final dos testes.
 
-```powershell
-chcp 65001
+Exemplo esperado de sucesso:
+
+```text
+Tests run: 76
+Failures: 0
+Errors: 0
+Skipped: 0
+BUILD SUCCESS
 ```
 
 ### Warning sobre `sun.misc.Unsafe`
@@ -1193,7 +1202,6 @@ Antes da entrega final, revisar:
 - [ ] Preencher links reais dos repositórios.
 - [ ] Inserir link do vídeo de apresentação.
 - [ ] Inserir ou remover referência à collection Postman/Insomnia.
-- [ ] Confirmar `quarkus.http.root-path=api`.
 - [ ] Confirmar nomes reais dos secrets no Azure Key Vault.
 - [ ] Confirmar configuração real de JWT no core.
 - [ ] Documentar workflow real de deploy no GitHub Actions.
