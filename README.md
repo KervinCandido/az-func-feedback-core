@@ -4,7 +4,7 @@
 [![Quarkus](https://img.shields.io/badge/Quarkus-3.34.6-purple)](#tecnologias-utilizadas)
 [![Azure Functions](https://img.shields.io/badge/Azure%20Functions-HTTP%20Trigger-0078D4)](#arquitetura-da-solução)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL-336791)](#modelo-de-dados)
-[![Tests](https://img.shields.io/badge/Tests-55%20passing-brightgreen)](#testes)
+[![Tests](https://img.shields.io/badge/Tests-76%20passing-brightgreen)](#testes)
 
 ## Projeto
 
@@ -837,17 +837,28 @@ mvn -Dtest=AdminFeedbackNotificationLogResourceTest test
 mvn -Dtest=EmailSenderTest test
 ```
 
+```powershell
+mvn -Dtest=ListFeedbackNotificationLogsUseCaseTest test
+```
+
+```powershell
+mvn -Dtest=AvaliacaoResourceValidationTest test
+```
+
+```powershell
+mvn -Dtest=PanacheFeedbackNotificationLogRepositoryTest test
+```
+
 ### Última validação local registrada
 
 ```text
-Tests run: 55
+Tests run: 76
 Failures: 0
 Errors: 0
 Skipped: 0
 BUILD SUCCESS
 ```
 
-> TODO: atualizar este número caso novos testes sejam adicionados antes da entrega.
 
 ---
 
@@ -897,12 +908,16 @@ O projeto cobre:
 
 - validações do domínio `Feedback`;
 - validações do domínio `FeedbackNotificationLog`;
-- classificação de urgência;
+- classificação de urgência por nota e por palavras críticas;
 - criação do feedback;
 - envio de notificações;
 - registro de logs `ENVIADA` e `FALHA`;
+- consulta de logs por feedback;
+- ordenação dos logs por `dataTentativa` descendente;
 - parsing de e-mails administrativos;
 - escape HTML;
+- mapeamento entre domínio e entidades de persistência;
+- validações REST de payload;
 - consulta administrativa dos logs;
 - autorização `ALUNO`, `ADMIN`, `401` e `403`.
 
@@ -1185,7 +1200,6 @@ Antes da entrega final, revisar:
 - [ ] Documentar configuração final de observabilidade/Application Insights.
 - [ ] Confirmar se `docker-compose.yml` com Azurite permanece no core.
 - [ ] Confirmar se dependências relacionadas a Blob Storage permanecem no core ou migram para o report.
-- [ ] Atualizar número de testes caso a suíte mude.
 
 ---
 
