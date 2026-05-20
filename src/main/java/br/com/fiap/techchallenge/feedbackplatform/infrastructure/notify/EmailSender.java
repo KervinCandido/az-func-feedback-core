@@ -21,6 +21,8 @@ import br.com.fiap.techchallenge.feedbackplatform.application.ports.Notification
 import br.com.fiap.techchallenge.feedbackplatform.domain.model.Feedback;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 
 @ApplicationScoped
 public class EmailSender implements Notification<Feedback> {
@@ -47,6 +49,8 @@ public class EmailSender implements Notification<Feedback> {
     String subject;
 
     @Override
+    @Counted(value = "feedback.sendEmail.attempted", description = "Contador de notificação de feedback enviadas")
+    @Timed(value = "feedback.sendEmail.duration", description = "Tempo de execução da notificação de feedback")
     public void send(Feedback feedback) {
         EmailClient emailClient = new EmailClientBuilder()
                 .connectionString(connectionString)
